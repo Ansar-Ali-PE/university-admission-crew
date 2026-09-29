@@ -1,18 +1,17 @@
+# 1. High-priority system patch for SQLite (Must be at the absolute top)
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-# Keep everything else below it exactly as it was:
+# 2. Initialize Streamlit & Page Configuration immediately
 import streamlit as st
-from langchain_groq import ChatGroq
-from crewai import Crew, Process
-...
+st.set_page_config(page_title="UniAdmit AI", page_icon="🎓", layout="wide")
 
-import streamlit as st
+# 3. Import remaining heavy packages
 from langchain_groq import ChatGroq
 from crewai import Crew, Process
 
-# Import modular configurations
+# 4. Import modular configurations
 from agents import (
     get_document_scanner,
     get_program_matchmaker,
@@ -21,12 +20,9 @@ from agents import (
 )
 from tasks import create_tasks
 
-# Page configuration
-st.set_page_config(page_title="UniAdmit AI", page_icon="🎓", layout="wide")
-
+# 5. Render App Header UI
 st.title("🎓 Multi-Agent University Admission Advisor")
 st.subheader("Powered by CrewAI & Groq")
-
 # Sidebar for API configurations
 st.sidebar.header("Configuration")
 groq_api_key = st.sidebar.text_input("Enter Groq API Key:", type="password")
