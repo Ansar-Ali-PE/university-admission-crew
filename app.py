@@ -1,17 +1,18 @@
-# 1. High-priority system patch for SQLite (Must be at the absolute top)
+# 1. High-priority system patch for SQLite (Must be at the absolute top of the file)
 __import__('pysqlite3')
 import sys
 sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
 
-# 2. Initialize Streamlit & Page Configuration immediately
+# 2. Initialize Streamlit & Page Configuration immediately after the patch
 import streamlit as st
 st.set_page_config(page_title="UniAdmit AI", page_icon="🎓", layout="wide")
 
-# 3. Import remaining heavy packages
+# 3. Import remaining heavy orchestration packages
+import os
 from langchain_groq import ChatGroq
 from crewai import Crew, Process
 
-# 4. Import modular configurations
+# 4. Import modular configurations from your repository files
 from agents import (
     get_document_scanner,
     get_program_matchmaker,
@@ -23,13 +24,13 @@ from tasks import create_tasks
 # 5. Render App Header UI
 st.title("🎓 Multi-Agent University Admission Advisor")
 st.subheader("Powered by CrewAI & Groq")
-# Sidebar for API configurations
+
+# 6. Sidebar Configuration Menu
 st.sidebar.header("Configuration")
 groq_api_key = st.sidebar.text_input("Enter Groq API Key:", type="password")
 model_choice = st.sidebar.selectbox("Select Groq Model:", ["groq/llama3-70b-8192", "groq/mixtral-8x7b-32768"])
 
-
-# Layout setup
+# 7. Form Layout Setup (Explicitly passing integer 2)
 col1, col2 = st.columns(2)
 
 with col1:
@@ -50,23 +51,26 @@ with col2:
         else:
             with st.spinner("Agents are analyzing profile data, matching programs, and ranking priorities..."):
                 try:
-                    # Initialize LLM via Groq
+                    # Inject the key into the environment so CrewAI's litellm layer can authenticate
+                    os.environ["GROQ_API_KEY"] = groq_api_key
+                    
+                    # Initialize LLM via Groq wrapper
                     llm = ChatGroq(
                         groq_api_key=groq_api_key,
                         model_name=model_choice,
                         temperature=0.3
                     )
                     
-                    # Instantiate Agents
+                    # Instantiate Modular Agents
                     scanner = get_document_scanner(llm)
                     matchmaker = get_program_matchmaker(llm)
                     ranker = get_priority_ranker(llm)
                     advisor = get_student_advisor(llm)
                     
-                    # Create Tasks
+                    # Create Sequential Tasks Pipeline
                     tasks = create_tasks(scanner, matchmaker, ranker, advisor)
                     
-                    # Structure the raw profile text input
+                    # Package the student data payload structured string
                     profile_payload = f"""
                     Name: {name}
                     GPA: {gpa}
@@ -76,7 +80,7 @@ with col2:
                     Career Goals: {goals}
                     """
                     
-                    # Initialize Crew
+                    # Initialize multi-agent Execution Crew
                     crew = Crew(
                         agents=[scanner, matchmaker, ranker, advisor],
                         tasks=tasks,
@@ -84,10 +88,10 @@ with col2:
                         verbose=True
                     )
                     
-                    # Execute crew workflow
+                    # Execute agents pipeline workflow
                     result = crew.kickoff(inputs={"student_profile": profile_payload})
                     
-                    # Display output
+                    # Safely render markdown extraction text string output from the crew object
                     st.success("Analysis Complete!")
                     st.markdown(result.raw)
                     
