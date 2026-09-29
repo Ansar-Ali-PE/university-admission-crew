@@ -26,7 +26,8 @@ st.subheader("Powered by CrewAI & Groq")
 # Sidebar for API configurations
 st.sidebar.header("Configuration")
 groq_api_key = st.sidebar.text_input("Enter Groq API Key:", type="password")
-model_choice = st.sidebar.selectbox("Select Groq Model:", ["llama3-70b-8192", "mixtral-8x7b-32768"])
+model_choice = st.sidebar.selectbox("Select Groq Model:", ["groq/llama3-70b-8192", "groq/mixtral-8x7b-32768"])
+
 
 # Layout setup
 col1, col2 = st.columns(2)
