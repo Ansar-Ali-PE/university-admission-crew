@@ -25,10 +25,13 @@ from tasks import create_tasks
 st.title("🎓 Multi-Agent University Admission Advisor")
 st.subheader("Powered by CrewAI & Groq")
 
-# 6. Sidebar Configuration Menu
+# 6. Sidebar Configuration Menu (Updated with active Groq production models)
 st.sidebar.header("Configuration")
 groq_api_key = st.sidebar.text_input("Enter Groq API Key:", type="password")
-model_choice = st.sidebar.selectbox("Select Groq Model:", ["groq/llama3-70b-8192", "groq/mixtral-8x7b-32768"])
+model_choice = st.sidebar.selectbox(
+    "Select Groq Model:", 
+    ["groq/llama-3.3-70b-versatile", "groq/llama-3.1-8b-instant"]
+)
 
 # 7. Form Layout Setup (Explicitly passing integer 2)
 col1, col2 = st.columns(2)
