@@ -1,3 +1,13 @@
+__import__('pysqlite3')
+import sys
+sys.modules['sqlite3'] = sys.modules.pop('pysqlite3')
+
+# Keep everything else below it exactly as it was:
+import streamlit as st
+from langchain_groq import ChatGroq
+from crewai import Crew, Process
+...
+
 import streamlit as st
 from langchain_groq import ChatGroq
 from crewai import Crew, Process
