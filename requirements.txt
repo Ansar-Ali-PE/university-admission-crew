@@ -1,4 +1,4 @@
+pysqlite3-binary==0.5.4
 streamlit==1.42.0
-crewai
-langchain-groq
-pysqlite3-binary
+crewai==0.102.0
+langchain-groq==0.2.5
